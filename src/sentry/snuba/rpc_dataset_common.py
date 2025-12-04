@@ -222,7 +222,8 @@ class RPCBase:
         )
 
         # if there are additional conditions to be added, make sure to merge them with the
-        where = and_trace_item_filters(where, query.extra_conditions)
+        if query.extra_conditions:
+            where = and_trace_item_filters(where, query.extra_conditions)
 
         cross_trace_queries = cls.get_cross_trace_queries(query)
 

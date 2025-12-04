@@ -76,6 +76,22 @@ class TraceMetricsSearchResolverConfig(SearchResolverConfig):
                 )
                 selected_metrics.add(metric)
 
+        if equations:
+            for equation in equations:
+                # Attempt to resolve the equation to extract metrics
+                try:
+                    resolved_equation, _ = search_resolver.resolve_equation(equation)
+                    if isinstance(resolved_equation, ResolvedMetricAggregate):
+                        if resolved_equation.metric_name and resolved_equation.metric_type:
+                            metric = Metric(
+                                metric_name=resolved_equation.metric_name,
+                                metric_type=resolved_equation.metric_type,
+                                metric_unit=resolved_equation.metric_unit,
+                            )
+                            selected_metrics.add(metric)
+                except Exception:
+                    pass
+
         if not selected_metrics:
             return None
 

