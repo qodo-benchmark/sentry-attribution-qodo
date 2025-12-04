@@ -89,7 +89,7 @@ export function useFindAdjacentTrace({
 
   const enabled =
     direction === 'next'
-      ? !!projectId
+      ? !!currentTraceId && !!currentSpanId
       : hasAdjacentTraceLink &&
         adjacentTraceSampled &&
         !!adjacentTraceSpanId &&

