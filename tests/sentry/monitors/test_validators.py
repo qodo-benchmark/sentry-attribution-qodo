@@ -1197,6 +1197,11 @@ class MonitorIncidentDetectorValidatorTest(BaseMonitorValidatorTestCase):
 
     def test_rejects_multiple_data_sources(self):
         """Test that multiple data sources are rejected for cron monitors."""
+        # Create a condition group for testing
+        condition_group = DataConditionGroup.objects.create(
+            organization_id=self.organization.id,
+            logic_type=DataConditionGroup.Type.ANY,
+        )
         data = self._get_valid_detector_data(
             dataSources=[
                 {
@@ -1211,7 +1216,8 @@ class MonitorIncidentDetectorValidatorTest(BaseMonitorValidatorTestCase):
                 },
             ]
         )
-        validator = self._create_validator(data)
+        context = {**self.context, "condition_group": condition_group}
+        validator = self._create_validator(data, context=context)
         assert not validator.is_valid()
         assert "dataSources" in validator.errors
         assert "Only one data source is allowed" in str(validator.errors["dataSources"])
