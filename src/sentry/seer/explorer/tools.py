@@ -1149,12 +1149,13 @@ def get_log_attributes_for_trace(
         logger.warning("Organization not found", extra={"org_id": org_id})
         return None
 
+    # Query projects with organization data in a single query
     projects = list(
         Project.objects.filter(
             organization=organization,
             status=ObjectStatus.ACTIVE,
             **({"slug__in": project_slugs} if bool(project_slugs) else {}),
-        )
+        ).select_related('organization')
     )
 
     snuba_params = SnubaParams(
