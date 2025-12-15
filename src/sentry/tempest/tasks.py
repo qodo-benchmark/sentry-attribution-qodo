@@ -5,7 +5,6 @@ import sentry_sdk
 from django.conf import settings
 from requests import Response
 
-from sentry import options
 from sentry.models.projectkey import ProjectKey, UseCase
 from sentry.silo.base import SiloMode
 from sentry.tasks.base import instrumented_task
@@ -127,6 +126,8 @@ def fetch_latest_item_id(credentials_id: int, **kwargs) -> None:
     silo_mode=SiloMode.REGION,
 )
 def poll_tempest_crashes(credentials_id: int, **kwargs) -> None:
+    from sentry import options
+
     credentials = TempestCredentials.objects.select_related("project").get(id=credentials_id)
     project_id = credentials.project.id
     org_id = credentials.project.organization_id
