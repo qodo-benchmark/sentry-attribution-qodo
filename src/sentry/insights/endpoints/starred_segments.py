@@ -1,3 +1,5 @@
+from typing import Sequence
+
 from django.db import router
 from rest_framework import serializers, status
 from rest_framework.request import Request
@@ -11,6 +13,11 @@ from sentry.api.bases.organization import OrganizationEndpoint, OrganizationPerm
 from sentry.insights.models import InsightsStarredSegment
 from sentry.models.organization import Organization
 from sentry.utils.db import atomic_transaction
+
+
+def validate_segment_names(segment_names: Sequence[str]) -> bool:
+    """Validate that all segment names are non-empty and under length limit."""
+    return all(segment_names) and all(len(name) <= 200 for name in segment_names)
 
 
 class StarSegmentSerializer(serializers.Serializer):
