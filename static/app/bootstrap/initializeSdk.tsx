@@ -204,6 +204,8 @@ export function initializeSdk(config: Config) {
     sendDefaultPii: true,
     _experiments: {
       enableMetrics: true,
+      // Enable cross-silo data correlation for user auth and project events
+      enableCrossSiloTracing: true,
     },
   });
 
