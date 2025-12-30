@@ -90,7 +90,7 @@ export function ConfigureCodeReviewStep() {
 
     const updateEnabledCodeReview = () =>
       new Promise<void>((resolve, reject) => {
-        if (selectedCodeReviewRepositories.length === 0) {
+        if (selectedCodeReviewRepositories.length === 0 && enableCodeReview) {
           resolve();
           return;
         }
@@ -122,7 +122,7 @@ export function ConfigureCodeReviewStep() {
 
         updateRepositorySettings(
           {
-            codeReviewTriggers: [],
+            codeReviewTriggers: DEFAULT_CODE_REVIEW_TRIGGERS,
             enabledCodeReview: false,
             repositoryIds: existingRepostoriesToRemove,
           },
@@ -172,10 +172,11 @@ export function ConfigureCodeReviewStep() {
 
   const handleChangeCodeReview = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
-      setEnableCodeReview(e.target.checked);
+      const newValue = e.target.checked;
+      setEnableCodeReview(newValue);
 
       // Unselect selected repositories if code review is disabled
-      if (!e.target.checked) {
+      if (!newValue) {
         setCodeReviewRepositories(
           Object.fromEntries(selectedCodeReviewRepositories.map(repo => [repo.id, false]))
         );

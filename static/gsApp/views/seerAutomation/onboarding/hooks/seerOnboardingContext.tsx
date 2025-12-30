@@ -125,11 +125,10 @@ export function SeerOnboardingProvider({children}: {children: React.ReactNode}) 
    */
   const unselectedCodeReviewRepositories = useMemo(
     () =>
-      Object.entries(selectedCodeReviewRepositoriesMap)
-        .filter(([_, isSelected]) => !isSelected)
-        .map(([repoId]) => repositoriesMap[repoId])
-        .filter(repo => repo !== undefined),
-    [selectedCodeReviewRepositoriesMap, repositoriesMap]
+      repositories
+        ?.filter(repo => !selectedCodeReviewRepositoriesMap[repo.id])
+        .filter(repo => repo !== undefined) ?? [],
+    [selectedCodeReviewRepositoriesMap, repositories]
   );
 
   const setCodeReviewRepositories = useCallback(
