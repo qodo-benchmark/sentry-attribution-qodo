@@ -59,7 +59,7 @@ describe('PartialTraceDataWarning', () => {
         screen.getByRole('link', {name: 'Search similar traces in the past 24 hours'})
       ).toHaveAttribute(
         'href',
-        `/organizations/${organization.slug}/explore/traces/?mode=samples&project=1&query=${queryString}&statsPeriod=24h&table=trace`
+        `/organizations/${organization.slug}/explore/traces/?mode=samples&project=1&query=${queryString}&statsPeriod=24h`
       );
     });
   });
