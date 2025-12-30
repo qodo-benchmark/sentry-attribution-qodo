@@ -297,7 +297,7 @@ class Spans(rpc_dataset_common.RPCBase):
         config: SearchResolverConfig,
         search_resolver: SearchResolver | None = None,
         attributes: list[AttributeKey] | None = None,
-        max_buckets: int = 75,
+        max_buckets: int = 1000,
     ) -> list[dict[str, Any]]:
         search_resolver = search_resolver or cls.get_resolver(params, config)
         stats_filter, _, _ = search_resolver.resolve_query(query_string)

