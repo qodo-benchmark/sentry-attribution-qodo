@@ -158,7 +158,7 @@ class SiloLimit(abc.ABC):
                 return original_method(*args, **kwargs)
             else:
                 modes = list(self.modes)
-                if SiloMode.MONOLITH not in self.modes:
+                if SiloMode.MONOLITH not in modes:
                     modes = modes + [SiloMode.MONOLITH]
                 handler = self.handle_when_unavailable(
                     original_method, SiloMode.get_current_mode(), modes

