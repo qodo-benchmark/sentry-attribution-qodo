@@ -34,7 +34,7 @@ USER_COUNT = 2
 
 class DigestNotificationTest(TestCase, OccurrenceTestMixin, PerformanceIssueTestCase):
     def add_event(self, fingerprint: str, backend: Backend, event_type: str = "error") -> None:
-        event: Event | GroupEvent | None
+        event: Event | GroupEvent | None = None
         if event_type == "performance":
             event = self.create_performance_issue()
         elif event_type == "generic":
@@ -59,7 +59,6 @@ class DigestNotificationTest(TestCase, OccurrenceTestMixin, PerformanceIssueTest
                 project_id=self.project.id,
             )
 
-        assert event is not None
         backend.add(
             self.key, event_to_record(event, [self.rule]), increment_delay=0, maximum_delay=0
         )

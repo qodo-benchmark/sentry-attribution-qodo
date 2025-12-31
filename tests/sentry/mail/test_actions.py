@@ -254,7 +254,6 @@ class NotifyEmailTest(RuleTestCase, PerformanceIssueTestCase):
     def test_full_integration_performance(self) -> None:
         event = self.create_performance_issue()
         assert isinstance(event, GroupEvent)
-        assert event.group is not None
         action_data = {
             "id": "sentry.mail.actions.NotifyEmailAction",
             "targetType": "Member",

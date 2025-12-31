@@ -82,7 +82,6 @@ class HistoricGroupCounts(
 
     def _create_hourly_bucket(self, count: int, event: Event | GroupEvent) -> GroupsCountResponse:
         """It simplifies writing the expected data structures"""
-        assert event.group_id is not None
         return {
             "count()": count,
             "group_id": event.group_id,
