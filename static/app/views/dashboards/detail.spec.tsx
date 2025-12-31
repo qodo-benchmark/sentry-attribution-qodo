@@ -2291,9 +2291,12 @@ describe('Dashboards > Detail', () => {
         <DashboardDetail
           {...RouteComponentPropsFixture()}
           initialState={DashboardState.VIEW}
-          dashboard={DashboardFixture([], {
+          dashboard={{
+            id: 'test-dashboard',
+            title: 'Test Dashboard',
+            widgets: [],
             prebuiltId: PrebuiltDashboardId.FRONTEND_SESSION_HEALTH,
-          })}
+          }}
           dashboards={[]}
           onDashboardUpdate={jest.fn()}
           newWidget={undefined}

