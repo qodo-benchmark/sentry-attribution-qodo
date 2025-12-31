@@ -155,7 +155,7 @@ def _should_store_segment_name(segment_span: CompatibleSpan) -> str | None:
 
     def is_404() -> bool:
         status_code = attribute_value(segment_span, ATTRIBUTE_NAMES.HTTP_RESPONSE_STATUS_CODE)
-        return status_code == 404
+        return status_code == "404"
 
     return _should_store_segment_name_inner(segment_name, source, is_404)
 
