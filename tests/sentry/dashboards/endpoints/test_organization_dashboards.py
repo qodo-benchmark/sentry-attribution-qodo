@@ -44,6 +44,10 @@ class OrganizationDashboardsTest(OrganizationDashboardWidgetTestCase):
             widget_type=DashboardWidgetTypes.DISCOVER,
             interval="1d",
         )
+        self.test_project = self.organization.project_set.create(
+            name="Test Project",
+            slug="test-project"
+        )
 
     def assert_equal_dashboards(self, dashboard, data):
         assert data["id"] == str(dashboard.id)

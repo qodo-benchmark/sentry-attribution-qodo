@@ -117,7 +117,8 @@ function FilterSelector({
   useEffect(() => {
     setActiveFilterValues(initialValues);
     setStagedFilterValues([]);
-  }, [initialValues]);
+    setStagedOperator(initialOperator);
+  }, [initialValues, initialOperator]);
 
   // Retrieve full tag definition to check if it has predefined values
   const datasetFilterKeys = searchBarData.getFilterKeys();
@@ -232,7 +233,6 @@ function FilterSelector({
 
     setActiveFilterValues(opts);
     if (opts.length === 0) {
-      setStagedOperator(TermOperator.DEFAULT);
       onUpdateFilter({
         ...globalFilter,
         value: '',
@@ -282,6 +282,7 @@ function FilterSelector({
       <StyledButton
         aria-label={t('Remove Filter')}
         size="zero"
+        borderless
         onClick={() => onRemoveFilter(globalFilter)}
       >
         {t('Remove Filter')}
@@ -292,7 +293,7 @@ function FilterSelector({
   const renderFilterSelectorTrigger = () => (
     <FilterSelectorTrigger
       globalFilter={globalFilter}
-      activeFilterValues={stagedFilterValues}
+      activeFilterValues={activeFilterValues}
       operator={stagedOperator}
       options={options}
       queryResult={queryResult}
