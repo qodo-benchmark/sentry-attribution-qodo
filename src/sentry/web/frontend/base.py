@@ -57,7 +57,9 @@ audit_logger = logging.getLogger("sentry.audit.ui")
 
 
 class ViewSiloLimit(SiloLimit):
-    def __init__(self, modes: SiloMode | Iterable[SiloMode], internal: bool = False) -> None:
+    def __init__(
+        self, modes: SiloMode | Iterable[SiloMode], internal: bool = False
+    ) -> None:
         if isinstance(modes, SiloMode):
             modes = [modes]
         self.modes = frozenset(modes)
@@ -141,6 +143,11 @@ mode a 404 will be returned.
 all_silo_view = ViewSiloLimit([SiloMode.REGION, SiloMode.CONTROL, SiloMode.MONOLITH])
 """
 Apply to frontend views that respond in both CONTROL and REGION mode.
+"""
+
+monolith_silo_view = ViewSiloLimit([SiloMode.MONOLITH])
+"""
+Apply to frontend views that respond only in MONOLITH mode.
 """
 
 internal_region_silo_view = ViewSiloLimit([SiloMode.REGION], internal=True)
