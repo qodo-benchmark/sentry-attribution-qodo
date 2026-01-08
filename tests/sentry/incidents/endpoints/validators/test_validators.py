@@ -1297,6 +1297,29 @@ class TestMetricAlertsUpdateDetectorValidator(TestMetricAlertsDetectorValidator)
         ):
             update_validator.save()
 
+    def test_numeric_extrapolation_mode_create(self) -> None:
+        data = {
+            **self.valid_data,
+            "dataSources": [
+                {
+                    "queryType": SnubaQuery.Type.PERFORMANCE.value,
+                    "dataset": Dataset.EventsAnalyticsPlatform.value,
+                    "query": "test query",
+                    "aggregate": "count()",
+                    "timeWindow": 3600,
+                    "environment": self.environment.name,
+                    "eventTypes": [SnubaQueryEventType.EventType.TRACE_ITEM_SPAN.name.lower()],
+                    "extrapolation_mode": str(ExtrapolationMode.CLIENT_AND_SERVER_WEIGHTED.value),
+                },
+            ],
+        }
+
+        validator = MetricIssueDetectorValidator(data=data, context=self.context)
+        assert validator.is_valid(), validator.errors
+
+        with self.tasks():
+            validator.save()
+
     def test_nonexistent_extrapolation_mode_create(self) -> None:
         data = {
             **self.valid_data,
@@ -1318,7 +1341,7 @@ class TestMetricAlertsUpdateDetectorValidator(TestMetricAlertsDetectorValidator)
         assert not validator.is_valid(), validator.errors
         assert (
             validator.errors["dataSources"]["extrapolationMode"][0]
-            == "Invalid extrapolation mode: blah"
+            == "Invalid extrapolation mode."
         )
 
     def test_nonexistent_extrapolation_mode_update(self) -> None:
@@ -1364,5 +1387,5 @@ class TestMetricAlertsUpdateDetectorValidator(TestMetricAlertsDetectorValidator)
         assert not update_validator.is_valid(), update_validator.errors
         assert (
             update_validator.errors["dataSources"]["extrapolationMode"][0]
-            == "Invalid extrapolation mode: blah"
+            == "Invalid extrapolation mode."
         )

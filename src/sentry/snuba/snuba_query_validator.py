@@ -167,14 +167,28 @@ class SnubaQueryValidator(BaseDataSourceValidator[QuerySubscription]):
 
         return validated
 
-    def validate_extrapolation_mode(self, extrapolation_mode: str) -> ExtrapolationMode | None:
-        if extrapolation_mode is not None:
-            extrapolation_mode_enum = ExtrapolationMode.from_str(extrapolation_mode)
-            if extrapolation_mode_enum is None:
-                raise serializers.ValidationError(
-                    f"Invalid extrapolation mode: {extrapolation_mode}"
-                )
-            return extrapolation_mode_enum
+    def _coerce_extrapolation_mode_value(self, value: int) -> ExtrapolationMode:
+        try:
+            return ExtrapolationMode(value)
+        except ValueError:
+            raise serializers.ValidationError("Invalid extrapolation mode.")
+
+    def validate_extrapolation_mode(
+        self, extrapolation_mode: str | int | None
+    ) -> ExtrapolationMode | None:
+        if extrapolation_mode is None:
+            return None
+        if isinstance(extrapolation_mode, int):
+            return self._coerce_extrapolation_mode_value(extrapolation_mode)
+
+        normalized_value = extrapolation_mode.strip().lower()
+        if normalized_value.isdigit():
+            return self._coerce_extrapolation_mode_value(int(normalized_value))
+
+        extrapolation_mode_enum = ExtrapolationMode.from_str(normalized_value)
+        if extrapolation_mode_enum is None:
+            raise serializers.ValidationError("Invalid extrapolation mode.")
+        return extrapolation_mode_enum
 
     def validate(self, data):
         data = super().validate(data)
