@@ -125,6 +125,12 @@ def fetch_latest_item_id(credentials_id: int, **kwargs) -> None:
     namespace=tempest_tasks,
     processing_deadline_duration=60,
     silo_mode=SiloMode.REGION,
+    queue="tempest",
+    max_retries=3,
+    default_retry_delay=60,
+    autoretry_for=(requests.RequestException,),
+    retry_backoff=True,
+    retry_jitter=True,
 )
 def poll_tempest_crashes(credentials_id: int, **kwargs) -> None:
     credentials = TempestCredentials.objects.select_related("project").get(id=credentials_id)
