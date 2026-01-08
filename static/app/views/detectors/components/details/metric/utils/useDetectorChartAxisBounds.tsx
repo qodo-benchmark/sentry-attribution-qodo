@@ -21,7 +21,17 @@ export function useDetectorChartAxisBounds({
   thresholdMaxValue,
 }: UseChartAxisBoundsProps): ChartAxisBounds {
   return useMemo(() => {
+    const hasThresholdMax =
+      typeof thresholdMaxValue === 'number' && Number.isFinite(thresholdMaxValue);
+
     if (series.length === 0) {
+      if (hasThresholdMax) {
+        return {
+          maxValue: thresholdMaxValue,
+          minValue: Math.min(0, thresholdMaxValue),
+        };
+      }
+
       return {maxValue: 0, minValue: 0};
     }
 
@@ -32,6 +42,13 @@ export function useDetectorChartAxisBounds({
     );
 
     if (allSeriesValues.length === 0) {
+      if (hasThresholdMax) {
+        return {
+          maxValue: thresholdMaxValue,
+          minValue: Math.min(0, thresholdMaxValue),
+        };
+      }
+
       return {maxValue: 0, minValue: 0};
     }
 
@@ -39,7 +56,7 @@ export function useDetectorChartAxisBounds({
     const seriesMin = Math.min(...allSeriesValues);
 
     // Combine with threshold max and round to nearest whole number
-    const combinedMax = thresholdMaxValue
+    const combinedMax = hasThresholdMax
       ? Math.max(seriesMax, thresholdMaxValue)
       : seriesMax;
 

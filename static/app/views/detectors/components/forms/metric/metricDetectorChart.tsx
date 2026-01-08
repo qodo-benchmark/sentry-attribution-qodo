@@ -236,22 +236,27 @@ export function MetricDetectorChart({
   ]);
 
   const yAxes = useMemo(() => {
-    const {formatYAxisLabel, outputType} = getDetectorChartFormatters({
-      detectionType,
-      aggregate,
-    });
+    const {formatYAxisLabel, outputType, isBoundedPercentageAggregate} =
+      getDetectorChartFormatters({
+        detectionType,
+        aggregate,
+      });
 
-    const isPercentage = outputType === 'percentage';
-    // For percentage aggregates, use fixed max of 1 (100%) and calculated min
-    const yAxisMax = isPercentage ? 1 : maxValue > 0 ? maxValue : undefined;
-    const yAxisMin = isPercentage ? minValue : 0;
+    // For bounded percentage aggregates, use fixed max of 1 (100%).
+    // Percent-change detectors can exceed 100%, so use dynamic scaling.
+    let yAxisMax = isBoundedPercentageAggregate ? 1 : maxValue > 0 ? maxValue : undefined;
+    const yAxisMin = isBoundedPercentageAggregate ? Math.min(minValue, 1) : 0;
+
+    if (yAxisMax !== undefined && yAxisMin > yAxisMax) {
+      yAxisMax = undefined;
+    }
 
     const mainYAxis: YAXisComponentOption = {
       max: yAxisMax,
       min: yAxisMin,
       axisLabel: {
         // Show max label for percentage (100%) but hide for other types to avoid arbitrary values
-        showMaxLabel: isPercentage,
+        showMaxLabel: outputType === 'percentage',
         // Format the axis labels with units
         formatter: formatYAxisLabel,
       },

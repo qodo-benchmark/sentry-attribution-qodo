@@ -17,8 +17,9 @@ export function getDetectorChartFormatters({
   detectionType,
   aggregate,
 }: DetectorChartFormatterOptions) {
-  const outputType =
-    detectionType === 'percent' ? 'percentage' : aggregateOutputType(aggregate);
+  const aggregateType = aggregateOutputType(aggregate);
+  const outputType = detectionType === 'percent' ? 'percentage' : aggregateType;
+  const isBoundedPercentageAggregate = aggregateType === 'percentage';
   const unitSuffix = getMetricDetectorSuffix(detectionType, aggregate);
 
   const formatYAxisLabel = (value: number): string => {
@@ -38,6 +39,7 @@ export function getDetectorChartFormatters({
   return {
     outputType,
     unitSuffix,
+    isBoundedPercentageAggregate,
     formatYAxisLabel,
     formatTooltipValue,
   };
