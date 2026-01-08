@@ -119,8 +119,7 @@ export function initializeSdk(config: Config) {
     allowUrls: SPA_DSN ? SPA_MODE_ALLOW_URLS : sentryConfig?.allowUrls,
     integrations: getSentryIntegrations(),
     tracesSampleRate,
-    profileSessionSampleRate: shouldOverrideBrowserProfiling ? 1 : 0.1,
-    profileLifecycle: 'trace',
+    profilesSampleRate: shouldOverrideBrowserProfiling ? 1 : 0.1,
     tracePropagationTargets: ['localhost', /^\//, ...extraTracePropagationTargets],
     tracesSampler: context => {
       const op = context.attributes?.[Sentry.SEMANTIC_ATTRIBUTE_SENTRY_OP] || '';
