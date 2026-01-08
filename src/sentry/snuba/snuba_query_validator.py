@@ -87,7 +87,7 @@ class SnubaQueryValidator(BaseDataSourceValidator[QuerySubscription]):
         required=False,
         allow_empty=False,
     )
-    extrapolation_mode = serializers.IntegerField(required=False, allow_null=True)
+    extrapolation_mode = serializers.CharField(required=False, allow_null=True)
 
     class Meta:
         model = QuerySubscription
@@ -166,6 +166,29 @@ class SnubaQueryValidator(BaseDataSourceValidator[QuerySubscription]):
             raise serializers.ValidationError("You do not have access to the log alerts feature.")
 
         return validated
+
+    def _coerce_extrapolation_mode_value(self, value: int) -> ExtrapolationMode:
+        try:
+            return ExtrapolationMode(value)
+        except ValueError:
+            raise serializers.ValidationError("Invalid extrapolation mode.")
+
+    def validate_extrapolation_mode(
+        self, extrapolation_mode: str | int | None
+    ) -> ExtrapolationMode | None:
+        if extrapolation_mode is None:
+            return None
+        if isinstance(extrapolation_mode, int):
+            return self._coerce_extrapolation_mode_value(extrapolation_mode)
+
+        normalized_value = extrapolation_mode.strip().lower()
+        if normalized_value.isdigit():
+            return self._coerce_extrapolation_mode_value(int(normalized_value))
+
+        extrapolation_mode_enum = ExtrapolationMode.from_str(normalized_value)
+        if extrapolation_mode_enum is None:
+            raise serializers.ValidationError("Invalid extrapolation mode.")
+        return extrapolation_mode_enum
 
     def validate(self, data):
         data = super().validate(data)
@@ -406,9 +429,6 @@ class SnubaQueryValidator(BaseDataSourceValidator[QuerySubscription]):
 
     @override
     def create_source(self, validated_data) -> QuerySubscription:
-        extrapolation_mode = validated_data.get("extrapolation_mode")
-        if extrapolation_mode is not None:
-            extrapolation_mode = ExtrapolationMode(extrapolation_mode)
         snuba_query = create_snuba_query(
             query_type=validated_data["query_type"],
             dataset=validated_data["dataset"],
@@ -419,7 +439,7 @@ class SnubaQueryValidator(BaseDataSourceValidator[QuerySubscription]):
             environment=validated_data["environment"],
             event_types=validated_data["event_types"],
             group_by=validated_data.get("group_by"),
-            extrapolation_mode=extrapolation_mode,
+            extrapolation_mode=validated_data.get("extrapolation_mode"),
         )
         return create_snuba_subscription(
             project=self.context["project"],
